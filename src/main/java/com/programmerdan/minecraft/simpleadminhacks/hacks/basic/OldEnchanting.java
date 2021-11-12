@@ -48,6 +48,7 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -334,6 +335,19 @@ public final class OldEnchanting extends BasicHack {
 		}
 		for (final MerchantRecipe recipe : ((Merchant) inventory).getRecipes()) {
 			recipe.setExperienceReward(false);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onAdvancementExp(final PlayerAdvancementDoneEvent event) {
+		if (!this.disableGrindExp) {
+			return;
+		} else {
+			//remove progress toward advancement, no direct way to block reward
+			//will still show client-side advancement got, unless we block packet
+			for(String criterion : event.getAdvancement().getCriteria()) {
+				event.getPlayer().getAdvancementProgress(event.getAdvancement()).revokeCriteria(criterion);
+			}
 		}
 	}
 
